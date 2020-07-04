@@ -8,7 +8,9 @@ import javax.validation.Valid;
 
 import com.service.stajnet.controller.exception.NotProperIdException;
 import com.service.stajnet.controller.exception.UserNotFoundException;
+import com.service.stajnet.controller.mapper.InheritMapper;
 import com.service.stajnet.dao.UserDAO;
+import com.service.stajnet.dto.UserDTO;
 import com.service.stajnet.model.User;
 import com.service.stajnet.service.UserServiceImpl;
 
@@ -27,6 +29,9 @@ public class UserController {
     @Autowired
     private UserServiceImpl userService;
 
+    @Autowired
+    private InheritMapper mapper;
+
     @GetMapping(value = "/{user_id}")
     public User findOne(@PathVariable String user_id){
         final Long id;
@@ -42,10 +47,10 @@ public class UserController {
     }
 
     @GetMapping
-    public Collection<User> findAll(){
+    public Collection<UserDTO> findAll(){
         Iterable<User> users = this.userService.findAll();
-        List<User> userList = new ArrayList<User>();
-        users.forEach(user -> userList.add(user));
+        List<UserDTO> userList = new ArrayList<UserDTO>();
+        users.forEach(user -> userList.add(mapper.userEntityToDTO(user)));
         return userList;
     }
 

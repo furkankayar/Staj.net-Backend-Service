@@ -47,6 +47,7 @@ public class StajnetApplication {
 						.username("furkankayar")
 						.firstName("furkan")
 						.lastName("kayar")
+						.gender(User.Gender.MALE)
 						.encryptedPassword(hashedPassword)
 						.roles(roles)
 						.build()

@@ -7,6 +7,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -30,6 +32,12 @@ import lombok.NoArgsConstructor;
 @Table(name = "users")
 public class User implements UserDetails {
 
+    public enum Gender{
+        MALE,
+        FEMALE,
+        UNSPECIFIED
+    };
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -45,11 +53,31 @@ public class User implements UserDetails {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @Column(name = "gender", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
     @Column(name = "password", nullable = false)
     private String encryptedPassword;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<Role>();
+
+    @Column(name = "accountNonExpired")
+    @Builder.Default
+    private boolean accountNonExpired = true;
+
+    @Column(name = "accountNonLocked")
+    @Builder.Default
+    private boolean accountNonLocked = true;
+
+    @Column(name = "credentialsNonExpired")
+    @Builder.Default
+    private boolean credentialsNonExpired = true;
+
+    @Column(name = "enabled")
+    @Builder.Default
+    private boolean enabled = true;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -63,21 +91,21 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return this.accountNonExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return this.accountNonLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return this.credentialsNonExpired;
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.enabled;
     }
 }
