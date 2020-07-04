@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.springframework.security.core.GrantedAuthority;
 
 import lombok.AllArgsConstructor;
@@ -22,6 +24,7 @@ public class Role implements GrantedAuthority{
     @Id
     private String role;
 
+    @JsonIgnore
     @Override
     public String getAuthority(){
         return role;

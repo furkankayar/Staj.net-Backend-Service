@@ -1,6 +1,7 @@
 package com.service.stajnet.model;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -60,9 +62,18 @@ public class User implements UserDetails {
     @Column(name = "password", nullable = false)
     private String encryptedPassword;
 
+    @Column(name = "birthdate", nullable = true)
+    private Date birthdate;
+
+    @Column(name = "nationality", nullable = true)
+    private String nationality;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<Role>();
 
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Social> socials = new HashSet<Social>();
+ 
     @Column(name = "accountNonExpired")
     @Builder.Default
     private boolean accountNonExpired = true;

@@ -1,8 +1,10 @@
 package com.service.stajnet;
 
+import java.util.Calendar;
 import java.util.HashSet;
 
 import com.service.stajnet.model.Role;
+import com.service.stajnet.model.Social;
 import com.service.stajnet.model.User;
 import com.service.stajnet.repository.IUserRepository;
 
@@ -42,13 +44,26 @@ public class StajnetApplication {
 				HashSet<Role> roles = new HashSet<Role>();
 				roles.add(new Role("admin"));
 				roles.add(new Role("user"));
+				HashSet<Social> socials = new HashSet<Social>();
+				socials.add(new Social("https://www.linkedin.com/in/furkankayar/", Social.Type.LINKEDIN));
+				socials.add(new Social("https://github.com/furkankayar", Social.Type.GITHUB));
+				Calendar cal = Calendar.getInstance();
+				cal.set(Calendar.YEAR, 1998);
+				cal.set(Calendar.MONTH, Calendar.OCTOBER);
+				cal.set(Calendar.DAY_OF_MONTH, 13);
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
 				userRepository.save(
 					User.builder()
 						.username("furkankayar")
 						.firstName("furkan")
 						.lastName("kayar")
 						.gender(User.Gender.MALE)
+						.nationality("T.C.")
+						.birthdate(cal.getTime())
 						.encryptedPassword(hashedPassword)
+						.socials(socials)
 						.roles(roles)
 						.build()
 				);

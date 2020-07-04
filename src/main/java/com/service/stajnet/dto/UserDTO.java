@@ -1,8 +1,11 @@
 package com.service.stajnet.dto;
 
+import java.util.Date;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.service.stajnet.model.Role;
+import com.service.stajnet.model.Social;
 import com.service.stajnet.model.User;
 
 import lombok.AllArgsConstructor;
@@ -20,6 +23,10 @@ public class UserDTO {
     private String firstName;
     private String lastName;
     private User.Gender gender;
+    private String nationality;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    private Date birthdate;
+    private Set<Social> socials;
     private Set<Role> roles;
     private boolean enabled;
     private boolean accountNonLocked;
