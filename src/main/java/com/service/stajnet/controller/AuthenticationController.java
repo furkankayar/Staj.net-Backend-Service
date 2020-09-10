@@ -50,4 +50,5 @@ public class AuthenticationController {
             new AbstractMap.SimpleEntry<>("message", "Refresh token deleted successfully!"))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
+ 
 }
