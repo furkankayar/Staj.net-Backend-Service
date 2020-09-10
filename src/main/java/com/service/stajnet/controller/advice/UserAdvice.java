@@ -28,6 +28,4 @@ public class UserAdvice {
         String error = "Id have to be long!";
         return utility.buildErrorResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, error, ex));
     }
-
-
 }

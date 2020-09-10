@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import com.service.stajnet.controller.exception.NotProperIdException;
 import com.service.stajnet.controller.exception.UserNotFoundException;
 import com.service.stajnet.controller.mapper.InheritMapper;
 import com.service.stajnet.dao.UserDAO;
@@ -15,6 +14,7 @@ import com.service.stajnet.model.User;
 import com.service.stajnet.service.UserServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/user")
 public class UserController {
     
@@ -32,6 +33,7 @@ public class UserController {
     @Autowired
     private InheritMapper mapper;
 
+    /*
     @GetMapping(value = "/{user_id}")
     public User findOne(@PathVariable String user_id){
         final Long id;
@@ -44,6 +46,12 @@ public class UserController {
 
         User entity = userService.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         return entity;
+    }*/
+
+    @GetMapping(value = "/{username}")
+    public User findByUsername(@PathVariable String username){
+        User entity = userService.findByUsername(username).orElseThrow(() -> new UserNotFoundException(0l));
+        return entity; 
     }
 
     @GetMapping

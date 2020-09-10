@@ -10,4 +10,5 @@ import org.springframework.data.repository.query.Param;
 public interface IUserRepository extends PagingAndSortingRepository<User, Long>{
     
     public Optional<User> findByUsername(@Param("username") String username);
+    
 }

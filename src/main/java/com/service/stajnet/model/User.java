@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public final class User implements UserDetails {
 
     public enum Gender{
         MALE,
@@ -55,11 +55,11 @@ public class User implements UserDetails {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "gender", nullable = false)
+    @Column(name = "gender", nullable = true)
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = true)
     private String encryptedPassword;
 
     @Column(name = "birthdate", nullable = true)
@@ -68,12 +68,22 @@ public class User implements UserDetails {
     @Column(name = "nationality", nullable = true)
     private String nationality;
 
+    @Builder.Default
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<Role>();
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Builder.Default
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Social> socials = new HashSet<Social>();
  
+    @Builder.Default
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Company> companies = new HashSet<Company>();
+
+    @Builder.Default
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Announcement> announcements = new HashSet<Announcement>();
+
     @Column(name = "accountNonExpired")
     @Builder.Default
     private boolean accountNonExpired = true;

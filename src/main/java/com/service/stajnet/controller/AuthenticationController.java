@@ -15,12 +15,14 @@ import com.service.stajnet.service.RefreshTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@CrossOrigin(maxAge = 3600)
 @RequestMapping("/auth")
 public class AuthenticationController {
     
@@ -30,6 +32,7 @@ public class AuthenticationController {
     @Autowired
     private RefreshTokenService refreshTokenService;
     
+    @CrossOrigin("http://localhost:8000")
     @PostMapping(path = "/login")
     public ResponseEntity<Object> login(@Valid @RequestBody LoginDAO body){
         return ResponseEntity.ok(authService.login(body));

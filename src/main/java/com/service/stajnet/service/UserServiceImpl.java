@@ -46,5 +46,4 @@ public class UserServiceImpl implements IUserService {
         Optional<User> byUsername = userRepository.findByUsername(username);
         return byUsername.orElseThrow(() -> new UsernameNotFoundException("User is not found!"));
     }
-    
 }

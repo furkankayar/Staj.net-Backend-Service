@@ -38,8 +38,7 @@ public class AuthServiceImpl implements IAuthService{
 
     @Override
     public AuthenticationResponse login(LoginDAO loginDAO) {
-        authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(loginDAO.getUsername(), loginDAO.getPassword()));
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDAO.getUsername(), loginDAO.getPassword()));
         String token = jwtTokenProvider.createToken(loginDAO.getUsername(),
                 this.userService.findByUsername(loginDAO.getUsername()).orElseThrow(
                         () -> new UsernameNotFoundException("Username " + loginDAO.getUsername() + " not found"))
