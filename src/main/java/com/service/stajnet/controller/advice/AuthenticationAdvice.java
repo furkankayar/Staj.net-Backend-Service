@@ -5,6 +5,7 @@ import com.service.stajnet.controller.error.ApiError;
 import com.service.stajnet.security.InvalidJwtAuthenticationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -41,5 +42,11 @@ public class AuthenticationAdvice {
     public ResponseEntity<Object> handleInvalidJwtAuthenticationExceptipon(InvalidJwtAuthenticationException ex){
         String error = "Check your authorization token!";
         return utility.buildErrorResponseEntity(new ApiError(HttpStatus.FORBIDDEN, error, ex));
+    }
+
+    @ExceptionHandler(value = DataIntegrityViolationException.class)
+    public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex){
+        String error = "Username and email must be unique!";
+        return utility.buildErrorResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, error, ex));
     }
 }

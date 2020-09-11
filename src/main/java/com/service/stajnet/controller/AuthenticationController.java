@@ -9,6 +9,8 @@ import javax.validation.Valid;
 
 import com.service.stajnet.dao.LoginDAO;
 import com.service.stajnet.dao.RefreshTokenDAO;
+import com.service.stajnet.dao.RegisterDAO;
+import com.service.stajnet.dto.RegisterationResponse;
 import com.service.stajnet.service.AuthServiceImpl;
 import com.service.stajnet.service.RefreshTokenService;
 
@@ -51,4 +53,10 @@ public class AuthenticationController {
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
  
+    @PostMapping(path = "/register")
+    public RegisterationResponse register(@Valid @RequestBody RegisterDAO body){
+        
+        System.out.println(body);
+        return authService.register(body);
+    }
 }

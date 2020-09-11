@@ -3,17 +3,22 @@ package com.service.stajnet.service;
 import java.time.Instant;
 
 import com.service.stajnet.controller.exception.UserNotFoundException;
+import com.service.stajnet.controller.mapper.InheritMapper;
 import com.service.stajnet.dao.LoginDAO;
 import com.service.stajnet.dao.RefreshTokenDAO;
+import com.service.stajnet.dao.RegisterDAO;
 import com.service.stajnet.dto.AuthenticationResponse;
+import com.service.stajnet.dto.RegisterationResponse;
 import com.service.stajnet.model.User;
 import com.service.stajnet.security.JwtTokenProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +37,12 @@ public class AuthServiceImpl implements IAuthService{
 
     @Autowired
     private RefreshTokenService refreshTokenService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private InheritMapper mapper;
 
     @Value("${jwt.expiration.time}")
     private long jwtExpirationInMillis;
@@ -64,4 +75,12 @@ public class AuthServiceImpl implements IAuthService{
                 .build();
     }
 
+    @Override
+    public RegisterationResponse register(RegisterDAO registerDAO){
+
+        registerDAO.setPassword(passwordEncoder.encode(registerDAO.getPassword()));
+        userService.save(mapper.registerDAOToUserEntity(registerDAO));
+
+        return RegisterationResponse.builder().status(HttpStatus.OK).message("Registration successful!").build();
+    }
 }

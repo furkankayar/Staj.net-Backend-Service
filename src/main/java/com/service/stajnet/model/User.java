@@ -40,13 +40,18 @@ public final class User implements UserDetails {
         UNSPECIFIED
     };
 
+    public enum Nationality{
+        TC,
+        OTHER
+    }
+
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
     @Column(name = "first_name", nullable = false)
@@ -55,18 +60,22 @@ public final class User implements UserDetails {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+
     @Column(name = "gender", nullable = true)
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Column(name = "password", nullable = true)
-    private String encryptedPassword;
+    @Column(name = "password", nullable = false)
+    private String password;
 
     @Column(name = "birthdate", nullable = true)
     private Date birthdate;
 
     @Column(name = "nationality", nullable = true)
-    private String nationality;
+    @Enumerated(EnumType.STRING)
+    private Nationality nationality;
 
     @Builder.Default
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -107,7 +116,7 @@ public final class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.encryptedPassword;
+        return this.password;
     }
 
     @Override
