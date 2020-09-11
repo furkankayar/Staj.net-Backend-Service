@@ -15,8 +15,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AuthenticationResponse {
     
-    private String authenticationToken;
-    private String refreshToken;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss a z", timezone = "GMT+3")
     private Instant expiresAt;
     private String username;

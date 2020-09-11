@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Date;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 
 import com.service.stajnet.service.UserServiceImpl;
 
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -62,21 +62,18 @@ public class JwtTokenProvider {
     }
 
     public String getUsername(String token){
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
-        
+        try{
+            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject(); 
+        }
+        catch(ExpiredJwtException e){
+            return e.getClaims().getSubject();
+        }
     }
+
 
     public Authentication getAuthentication(String token){
         UserDetails userDetails = this.userService.loadUserByUsername(getUsername(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-    }
-
-    public String resolveToken(HttpServletRequest req){
-        String bearerToken = req.getHeader("Authorization");
-        if(bearerToken != null && bearerToken.startsWith("Bearer ")){
-            return bearerToken.substring(7, bearerToken.length());
-        }
-        return null;
     }
 
     public boolean validateToken(String token) throws InvalidJwtAuthenticationException {

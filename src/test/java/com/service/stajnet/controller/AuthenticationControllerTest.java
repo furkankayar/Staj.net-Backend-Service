@@ -31,11 +31,7 @@ public class AuthenticationControllerTest {
                             .accept(MediaType.APPLICATION_JSON))
                             .andExpect(status().isOk())
                             .andExpect(jsonPath("username").value("furkankayar"))
-                            .andExpect(jsonPath("refreshToken").isString())
-                            .andExpect(jsonPath("authenticationToken").isString())
-                            .andExpect(jsonPath("expiresAt").isString());
-                            
-    
+                            .andExpect(jsonPath("expiresAt").isString());  
     }
 
     @Test

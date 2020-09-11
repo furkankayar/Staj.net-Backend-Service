@@ -49,4 +49,10 @@ public class AuthenticationAdvice {
         String error = "Username and email must be unique!";
         return utility.buildErrorResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, error, ex));
     }
+
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex){
+        String error = "Invalid argument!";
+        return utility.buildErrorResponseEntity(new ApiError(HttpStatus.FORBIDDEN, error, ex));
+    }
 }

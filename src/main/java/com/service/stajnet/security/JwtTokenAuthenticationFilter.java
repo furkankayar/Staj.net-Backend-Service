@@ -6,6 +6,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.core.Authentication;
@@ -25,7 +26,7 @@ public class JwtTokenAuthenticationFilter extends GenericFilterBean{
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain) throws IOException, ServletException {
         
-        String token = jwtTokenProvider.resolveToken((HttpServletRequest)req);
+        String token = getJwtFromCookie((HttpServletRequest)req);
         try{
             if(token != null && jwtTokenProvider.validateToken(token)) {
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
@@ -38,5 +39,17 @@ public class JwtTokenAuthenticationFilter extends GenericFilterBean{
             // do smth
         }
         filterChain.doFilter(req, res);
+    }
+
+    private String getJwtFromCookie(HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if(cookies == null) return null;
+        for(Cookie cookie : cookies){
+            if(cookie.getName().equals("Authorization")){
+                return cookie.getValue();
+            }
+        }
+
+        return null;
     }
 }

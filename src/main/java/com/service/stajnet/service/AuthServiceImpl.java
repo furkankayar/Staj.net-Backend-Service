@@ -5,16 +5,19 @@ import java.time.Instant;
 import com.service.stajnet.controller.exception.UserNotFoundException;
 import com.service.stajnet.controller.mapper.InheritMapper;
 import com.service.stajnet.dao.LoginDAO;
-import com.service.stajnet.dao.RefreshTokenDAO;
 import com.service.stajnet.dao.RegisterDAO;
 import com.service.stajnet.dto.AuthenticationResponse;
 import com.service.stajnet.dto.RegisterationResponse;
 import com.service.stajnet.model.User;
+import com.service.stajnet.security.InvalidJwtAuthenticationException;
 import com.service.stajnet.security.JwtTokenProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -47,32 +50,82 @@ public class AuthServiceImpl implements IAuthService{
     @Value("${jwt.expiration.time}")
     private long jwtExpirationInMillis;
 
-    @Override
-    public AuthenticationResponse login(LoginDAO loginDAO) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDAO.getUsername(), loginDAO.getPassword()));
-        String token = jwtTokenProvider.createToken(loginDAO.getUsername(),
-                this.userService.findByUsername(loginDAO.getUsername()).orElseThrow(
-                        () -> new UsernameNotFoundException("Username " + loginDAO.getUsername() + " not found"))
-                        .getAuthorities());
+    @Value("${jwt.token.name}")
+    private String jwtTokenName;
 
-        return AuthenticationResponse.builder()
-                .authenticationToken(token)
-                .refreshToken(refreshTokenService.generateRefreshToken().getToken())
-                .expiresAt(Instant.now().plusMillis(jwtExpirationInMillis)).username(loginDAO.getUsername()).build();
+    @Value("${refresh.token.name}")
+    private String refreshTokenName;
+
+    @Override
+    public ResponseEntity<AuthenticationResponse> login(LoginDAO loginDAO, String accessToken, String refreshToken) {
+        
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDAO.getUsername(), loginDAO.getPassword()));
+
+        boolean accessTokenValid = false;
+        boolean refreshTokenValid = false;
+        try{
+            accessTokenValid = jwtTokenProvider.validateToken(accessToken);
+        }
+        catch(InvalidJwtAuthenticationException ex){
+            accessTokenValid = false;
+        }
+
+        try{
+            refreshTokenValid = refreshTokenService.validateRefreshToken(refreshToken);
+        }
+        catch(IllegalArgumentException ex){
+            refreshTokenValid = false;
+        }
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        String newAccessToken = accessToken;
+        String newRefreshToken = refreshToken;
+        
+        if((!accessTokenValid && !refreshTokenValid)){
+            newAccessToken = jwtTokenProvider.createToken(loginDAO.getUsername(), this.userService.findByUsername(loginDAO.getUsername()).orElseThrow(
+                    () -> new UsernameNotFoundException("Username " + loginDAO.getUsername() + " not found"))
+                    .getAuthorities());
+            newRefreshToken = refreshTokenService.generateRefreshToken().getToken();
+            responseHeaders.add(HttpHeaders.SET_COOKIE, cookieGenerator(jwtTokenName, newAccessToken).toString());
+            responseHeaders.add(HttpHeaders.SET_COOKIE, cookieGenerator(refreshTokenName, newRefreshToken).toString());
+        }
+        else if(!accessTokenValid && refreshTokenValid){
+            newAccessToken = jwtTokenProvider.createToken(loginDAO.getUsername(), this.userService.findByUsername(loginDAO.getUsername()).orElseThrow(
+                    () -> new UsernameNotFoundException("Username " + loginDAO.getUsername() + " not found"))
+                    .getAuthorities());
+            responseHeaders.add(HttpHeaders.SET_COOKIE, cookieGenerator(jwtTokenName, newAccessToken).toString());
+        }
+
+        return ResponseEntity.ok()
+                             .headers(responseHeaders)
+                             .body(
+                                AuthenticationResponse.builder()
+                                    .expiresAt(Instant.now().plusMillis(jwtExpirationInMillis))
+                                    .username(loginDAO.getUsername())
+                                    .build()
+                            );
     }
 
     @Override
-    public AuthenticationResponse refreshToken(RefreshTokenDAO refreshTokenDAO) {
-        refreshTokenService.validateRefreshToken(refreshTokenDAO.getRefreshToken());
-        User user = userService.findByUsername(refreshTokenDAO.getUsername())
-            .orElseThrow(() -> new UserNotFoundException(refreshTokenDAO.getUsername()));
+    public ResponseEntity<AuthenticationResponse> refreshToken(String refreshToken, String accessToken) {
+        
+        refreshTokenService.validateRefreshToken(refreshToken);
+       
+        User user = userService.findByUsername(jwtTokenProvider.getUsername(accessToken))
+            .orElseThrow(() -> new UserNotFoundException(jwtTokenProvider.getUsername(accessToken)));
         String token = jwtTokenProvider.createToken(user.getUsername(), user.getAuthorities());
-        return AuthenticationResponse.builder()
-                .authenticationToken(token)
-                .refreshToken(refreshTokenDAO.getRefreshToken())
-                .expiresAt(Instant.now().plusMillis(jwtExpirationInMillis))
-                .username(user.getUsername())
-                .build();
+       
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add(HttpHeaders.SET_COOKIE, cookieGenerator(jwtTokenName, token).toString());
+
+        return ResponseEntity.ok()
+                             .headers(responseHeaders)
+                             .body(
+                                AuthenticationResponse.builder()
+                                    .expiresAt(Instant.now().plusMillis(jwtExpirationInMillis))
+                                    .username(user.getUsername())
+                                    .build()
+                            );
     }
 
     @Override
@@ -83,4 +136,13 @@ public class AuthServiceImpl implements IAuthService{
 
         return RegisterationResponse.builder().status(HttpStatus.OK).message("Registration successful!").build();
     }
+
+    private ResponseCookie cookieGenerator(String name, String token){
+        return ResponseCookie.from(name, token)
+                            .maxAge(Integer.MAX_VALUE)
+                            .httpOnly(true)
+                            .path("/")
+                            .secure(false)
+                            .build();
+    } 
 }

@@ -29,9 +29,11 @@ public class RefreshTokenService {
         return refreshTokenRepository.save(refreshToken);
     }
 
-    public void validateRefreshToken(String token){
+    public boolean validateRefreshToken(String token){
         refreshTokenRepository.findByToken(token)
             .orElseThrow(() -> new IllegalArgumentException("Invalid refresh token"));
+        
+        return true;
     }
 
     public void deleteRefreshToken(String token){
