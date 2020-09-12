@@ -27,7 +27,7 @@ public class AuthenticationControllerTest {
     
         this.mockMvc.perform(post("/auth/login")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content("{ \"username\": \"furkankayar\", \"password\": \"123\" }")
+                            .content("{ \"username\": \"furkankayar\", \"password\": \"756ee75b\" }")
                             .accept(MediaType.APPLICATION_JSON))
                             .andExpect(status().isOk())
                             .andExpect(jsonPath("username").value("furkankayar"))
