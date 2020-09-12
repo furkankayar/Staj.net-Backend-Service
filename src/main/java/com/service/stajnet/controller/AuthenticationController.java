@@ -12,6 +12,7 @@ import com.service.stajnet.dao.RefreshTokenDAO;
 import com.service.stajnet.dao.RegisterDAO;
 import com.service.stajnet.dto.AuthenticationResponse;
 import com.service.stajnet.dto.RegisterationResponse;
+import com.service.stajnet.dto.UserDTO;
 import com.service.stajnet.service.AuthServiceImpl;
 import com.service.stajnet.service.RefreshTokenService;
 
@@ -20,13 +21,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:8000", allowCredentials = "true")
 @RequestMapping("/auth")
 public class AuthenticationController {
 
@@ -37,7 +39,7 @@ public class AuthenticationController {
     private RefreshTokenService refreshTokenService;
     
 
-    @CrossOrigin("http://localhost:8000")
+
     @PostMapping(path = "/login")
     public ResponseEntity<AuthenticationResponse> login(
             @CookieValue(name = "Authorization", required = false) String accessToken,
@@ -68,5 +70,13 @@ public class AuthenticationController {
         
         System.out.println(body);
         return authService.register(body);
+    }
+
+    @GetMapping(value = "/whoami")
+    public UserDTO whoami(
+        @CookieValue(name = "Authorization", required = false) String accessToken
+    )
+    {
+        return authService.whoami(accessToken);
     }
 }

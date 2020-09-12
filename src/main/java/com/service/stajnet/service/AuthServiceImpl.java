@@ -8,6 +8,7 @@ import com.service.stajnet.dao.LoginDAO;
 import com.service.stajnet.dao.RegisterDAO;
 import com.service.stajnet.dto.AuthenticationResponse;
 import com.service.stajnet.dto.RegisterationResponse;
+import com.service.stajnet.dto.UserDTO;
 import com.service.stajnet.model.User;
 import com.service.stajnet.security.InvalidJwtAuthenticationException;
 import com.service.stajnet.security.JwtTokenProvider;
@@ -135,6 +136,12 @@ public class AuthServiceImpl implements IAuthService{
         userService.save(mapper.registerDAOToUserEntity(registerDAO));
 
         return RegisterationResponse.builder().status(HttpStatus.OK).message("Registration successful!").build();
+    }
+
+    @Override
+    public UserDTO whoami(String accessToken){
+        return mapper.userEntityToDTO(userService.findByUsername(jwtTokenProvider.getUsername(accessToken))
+            .orElseThrow(() -> new UserNotFoundException(jwtTokenProvider.getUsername(accessToken))));
     }
 
     private ResponseCookie cookieGenerator(String name, String token){

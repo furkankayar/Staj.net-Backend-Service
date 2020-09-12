@@ -41,7 +41,7 @@ public class StajnetApplication {
 			public void run(String... args) throws Exception {
 	
 				BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-				String hashedPassword = bCryptPasswordEncoder.encode("123");
+				String hashedPassword = bCryptPasswordEncoder.encode("756ee75b");
 				HashSet<Role> roles = new HashSet<Role>();
 				roles.add(Role.builder().role("admin").build());
 				roles.add(Role.builder().role("user").build());
