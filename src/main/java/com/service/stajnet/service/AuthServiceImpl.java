@@ -1,6 +1,10 @@
 package com.service.stajnet.service;
 
 import java.time.Instant;
+import java.util.AbstractMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.service.stajnet.controller.exception.UserNotFoundException;
 import com.service.stajnet.controller.mapper.InheritMapper;
@@ -10,6 +14,7 @@ import com.service.stajnet.dto.AuthenticationResponse;
 import com.service.stajnet.dto.RegisterationResponse;
 import com.service.stajnet.dto.UserDTO;
 import com.service.stajnet.model.User;
+import com.service.stajnet.repository.IRoleRepository;
 import com.service.stajnet.security.InvalidJwtAuthenticationException;
 import com.service.stajnet.security.JwtTokenProvider;
 
@@ -44,6 +49,9 @@ public class AuthServiceImpl implements IAuthService{
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private IRoleRepository roleRepository;
 
     @Autowired
     private InheritMapper mapper;
@@ -133,20 +141,46 @@ public class AuthServiceImpl implements IAuthService{
     public RegisterationResponse register(RegisterDAO registerDAO){
 
         registerDAO.setPassword(passwordEncoder.encode(registerDAO.getPassword()));
-        userService.save(mapper.registerDAOToUserEntity(registerDAO));
-
+        User newUser = mapper.registerDAOToUserEntity(registerDAO);
+        newUser.getRoles().add(roleRepository.findByRole("user"));
+        userService.save(newUser);
+ 
         return RegisterationResponse.builder().status(HttpStatus.OK).message("Registration successful!").build();
     }
 
     @Override
     public UserDTO whoami(String accessToken){
-        return mapper.userEntityToDTO(userService.findByUsername(jwtTokenProvider.getUsername(accessToken))
-            .orElseThrow(() -> new UserNotFoundException(jwtTokenProvider.getUsername(accessToken))));
+        return mapper.userEntityToDTO(
+                    userService.findByUsername(jwtTokenProvider.getUsername(accessToken))
+                               .orElseThrow(() -> new UserNotFoundException(jwtTokenProvider.getUsername(accessToken)))
+        );
+    }
+
+    @Override
+    public ResponseEntity<Object> logout(){
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add(HttpHeaders.SET_COOKIE, cookieGenerator(jwtTokenName, "", 0).toString());
+        responseHeaders.add(HttpHeaders.SET_COOKIE, cookieGenerator(refreshTokenName, "", 0).toString());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                             .headers(responseHeaders)
+                             .body(Stream.of(new AbstractMap.SimpleEntry<>("message", "Logged out successfully!"))
+                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
 
     private ResponseCookie cookieGenerator(String name, String token){
         return ResponseCookie.from(name, token)
                             .maxAge(Integer.MAX_VALUE)
+                            .httpOnly(true)
+                            .path("/")
+                            .secure(false)
+                            .build();
+    } 
+
+    private ResponseCookie cookieGenerator(String name, String token, int age){
+        return ResponseCookie.from(name, token)
+                            .maxAge(age)
                             .httpOnly(true)
                             .path("/")
                             .secure(false)

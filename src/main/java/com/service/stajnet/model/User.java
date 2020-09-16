@@ -78,7 +78,7 @@ public final class User implements UserDetails {
     private Nationality nationality;
 
     @Builder.Default
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<Role>();
 
     @Builder.Default

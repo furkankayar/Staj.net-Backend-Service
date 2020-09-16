@@ -1,5 +1,6 @@
 package com.service.stajnet.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -29,6 +30,7 @@ public final class Role implements GrantedAuthority{
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(name = "role", unique = true)
     private String role;
 
     @JsonIgnore

@@ -1,6 +1,7 @@
 package com.service.stajnet.controller.error;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -15,7 +16,7 @@ public class ApiError {
     private HttpStatus status;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss a z", timezone = "GMT+3")
     private LocalDateTime timestamp;
-    private String message;
+    private List<String> messages;
     private String debugMessage;
     private List<ApiSubError> subErrors;
 
@@ -30,13 +31,17 @@ public class ApiError {
 
     public ApiError(HttpStatus status, Throwable ex){
         this(status);
-        this.message = "Unexpected error";
+        this.messages = Arrays.asList("Unexpected error");
         this.debugMessage = ex.getLocalizedMessage();
     }
 
     public ApiError(HttpStatus status, String message, Throwable ex){
+        this(status, Arrays.asList(message), ex);
+    }
+
+    public ApiError(HttpStatus status, List<String> messages, Throwable ex){
         this(status);
-        this.message = message;
+        this.messages = messages;
         this.debugMessage = ex.getLocalizedMessage();
     }
 }

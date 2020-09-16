@@ -6,12 +6,14 @@ import java.util.HashSet;
 import com.service.stajnet.model.Role;
 import com.service.stajnet.model.Social;
 import com.service.stajnet.model.User;
+import com.service.stajnet.security.JwtTokenAuthenticationFilter;
 import com.service.stajnet.service.IUserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,6 +34,13 @@ public class StajnetApplication {
 	@Bean
 	public Utility utility() {
 		return new Utility();
+	}
+
+	@Bean
+	public FilterRegistrationBean<JwtTokenAuthenticationFilter> registration(JwtTokenAuthenticationFilter filter) {
+    	FilterRegistrationBean<JwtTokenAuthenticationFilter> registration = new FilterRegistrationBean<JwtTokenAuthenticationFilter>(filter);
+    	registration.setEnabled(false);
+    	return registration;
 	}
 
 	@Bean

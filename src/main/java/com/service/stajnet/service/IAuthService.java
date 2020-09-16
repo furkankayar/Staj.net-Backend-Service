@@ -15,4 +15,6 @@ public interface IAuthService {
     public ResponseEntity<AuthenticationResponse> refreshToken(String refreshToken, String accessToken);
     public RegisterationResponse register(RegisterDAO registerDAO);
     public UserDTO whoami(String accessToken);
+    public ResponseEntity<Object> logout();
+
 }

@@ -8,7 +8,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,9 @@ import org.springframework.web.filter.GenericFilterBean;
 @Component("jwtTokenAuthenticationFilter")
 public class JwtTokenAuthenticationFilter extends GenericFilterBean{
     
+    @Autowired
+    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
     private JwtTokenProvider jwtTokenProvider;
 
     public JwtTokenAuthenticationFilter(JwtTokenProvider jwtTokenProvider){
@@ -28,17 +33,21 @@ public class JwtTokenAuthenticationFilter extends GenericFilterBean{
         
         String token = getJwtFromCookie((HttpServletRequest)req);
         try{
-            if(token != null && jwtTokenProvider.validateToken(token)) {
+            if(token == null || token == ""){
+                throw new InvalidJwtAuthenticationException("Missing authentication token!");
+            }
+            else if(jwtTokenProvider.validateToken(token)) {
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
                 if(auth != null){
-                    SecurityContextHolder.getContext().setAuthentication(auth);
+                    SecurityContextHolder.getContext().setAuthentication(auth);              
                 }
             }
+            filterChain.doFilter(req, res);
         }
         catch(InvalidJwtAuthenticationException ex){
-            // do smth
+            SecurityContextHolder.clearContext();
+            restAuthenticationEntryPoint.commence((HttpServletRequest)req, (HttpServletResponse)res, ex);
         }
-        filterChain.doFilter(req, res);
     }
 
     private String getJwtFromCookie(HttpServletRequest request){

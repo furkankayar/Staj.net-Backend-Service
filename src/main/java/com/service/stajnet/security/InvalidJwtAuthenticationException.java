@@ -1,6 +1,6 @@
 package com.service.stajnet.security;
 
-import javax.naming.AuthenticationException;
+import org.springframework.security.core.AuthenticationException;
 
 public class InvalidJwtAuthenticationException extends AuthenticationException {
     

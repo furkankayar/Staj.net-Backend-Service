@@ -1,14 +1,8 @@
 package com.service.stajnet.controller;
 
-import java.util.AbstractMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import javax.validation.Valid;
 
 import com.service.stajnet.dao.LoginDAO;
-import com.service.stajnet.dao.RefreshTokenDAO;
 import com.service.stajnet.dao.RegisterDAO;
 import com.service.stajnet.dto.AuthenticationResponse;
 import com.service.stajnet.dto.RegisterationResponse;
@@ -17,7 +11,6 @@ import com.service.stajnet.service.AuthServiceImpl;
 import com.service.stajnet.service.RefreshTokenService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -58,17 +51,16 @@ public class AuthenticationController {
     }
 
     @PostMapping(path = "/logout")
-    public ResponseEntity<Object> logout(@Valid @RequestBody RefreshTokenDAO body){
-        refreshTokenService.deleteRefreshToken(body.getRefreshToken());
-        return ResponseEntity.status(HttpStatus.OK).body(Stream.of(
-            new AbstractMap.SimpleEntry<>("message", "Refresh token deleted successfully!"))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+    public ResponseEntity<Object> logout(
+        @CookieValue(name = "Refresh_Token", required = true) String refreshToken
+    ){
+        refreshTokenService.deleteRefreshToken(refreshToken);
+        return authService.logout();
     }
  
     @PostMapping(path = "/register")
     public RegisterationResponse register(@Valid @RequestBody RegisterDAO body){
         
-        System.out.println(body);
         return authService.register(body);
     }
 
