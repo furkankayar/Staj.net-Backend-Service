@@ -57,6 +57,7 @@ public class StajnetApplication {
 				HashSet<Social> socials = new HashSet<Social>();
 				socials.add(Social.builder().address("https://www.linkedin.com/in/furkankayar/").type(Social.Type.LINKEDIN).build());
 				socials.add(Social.builder().address("https://www.github.com/furkankayar/").type(Social.Type.GITHUB).build());
+				socials.add(Social.builder().address("https://www.instagram.com/6675726b616e6b61796172/").type(Social.Type.INSTAGRAM).build());
 				Calendar cal = Calendar.getInstance();
 				cal.set(Calendar.YEAR, 1998);
 				cal.set(Calendar.MONTH, Calendar.OCTOBER);
