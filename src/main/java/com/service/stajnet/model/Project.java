@@ -2,8 +2,6 @@ package com.service.stajnet.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,30 +12,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Builder
-@Table(name = "socials")
-public final class Social {
-
-    public enum Type{
-        LINKEDIN,
-        TWITTER,
-        INSTAGRAM,
-        FACEBOOK,
-        GITHUB
-    }
-
+@Table(name = "projects")
+public class Project {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @Column(name = "address", nullable = false)
-    private String address;
 
-    @Column(name = "type", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Type type;
+    @Column(name  = "name")
+    private String name;
+
+    @Column(name = "description")
+    private String description;
 }

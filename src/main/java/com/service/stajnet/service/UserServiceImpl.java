@@ -2,9 +2,12 @@ package com.service.stajnet.service;
 
 import java.util.Optional;
 
+import com.service.stajnet.controller.mapper.InheritMapper;
+import com.service.stajnet.dao.PersonalInformationDAO;
 import com.service.stajnet.model.User;
 import com.service.stajnet.repository.IUserRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
@@ -14,16 +17,23 @@ import org.springframework.stereotype.Service;
 @Component("userService")
 public class UserServiceImpl implements IUserService {
 
+    @Autowired
+    private InheritMapper mapper;
     
-    private final IUserRepository userRepository;
-
-    public UserServiceImpl(IUserRepository userRepository){
-        this.userRepository = userRepository;
-    }
+    @Autowired
+    private IUserRepository userRepository;
 
     @Override
     public Optional<User> findById(Long id) {
         return this.userRepository.findById(id);
+    }
+
+    public User updateUser(PersonalInformationDAO data, String username){
+        User user = this.userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User is not found!"));
+        System.out.println(user);
+        user = mapper.updatePersonalInformation(user, data);
+        System.out.println(user);
+        return this.userRepository.save(user);
     }
 
     @Override

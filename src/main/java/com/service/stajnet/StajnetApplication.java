@@ -1,16 +1,17 @@
 package com.service.stajnet;
 
 import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.HashSet;
 
 import com.service.stajnet.model.Address;
+import com.service.stajnet.model.ComputerSkill;
 import com.service.stajnet.model.Contact;
 import com.service.stajnet.model.EducationHistory;
 import com.service.stajnet.model.ForeignLanguage;
 import com.service.stajnet.model.ForeignLanguage.Language;
 import com.service.stajnet.model.ForeignLanguage.Level;
 import com.service.stajnet.model.JobHistory;
+import com.service.stajnet.model.Project;
 import com.service.stajnet.model.Role;
 import com.service.stajnet.model.Social;
 import com.service.stajnet.model.User;
@@ -83,10 +84,7 @@ public class StajnetApplication {
 										.writingLevel(Level.B2)
 										.speakingLevel(Level.NATIVE)
 										.build());
-				Calendar birthdate = Calendar.getInstance();
-				birthdate.set(Calendar.YEAR, 1998);
-				birthdate.set(Calendar.MONTH, Calendar.OCTOBER);
-				birthdate.set(Calendar.DAY_OF_MONTH, 13);
+				LocalDateTime birthdate = LocalDateTime.of(1998, 10, 13, 0, 0, 0);
 
 				HashSet<JobHistory> jobHistories = new HashSet<JobHistory>();
 				LocalDateTime jobStart = LocalDateTime.of(2020, 7, 20, 0, 0, 0);
@@ -133,6 +131,28 @@ public class StajnetApplication {
 										.educationStatus(EducationHistory.Status.GRADUATED)
 										.build());
 				
+				HashSet<Project> projects = new HashSet<Project>();
+				projects.add(Project.builder()
+								.name("Record Analyzer")
+								.description("The tool that is used to analyze messages of 1553 records.")
+								.build());
+				projects.add(Project.builder()
+								.name("Test Project")
+								.description("Test project desctiption.")
+								.build());
+
+				HashSet<ComputerSkill> computerSkills = new HashSet<ComputerSkill>();
+				computerSkills.add(ComputerSkill.builder()
+									.name("Linux")
+									.level("User Level")
+									.explanation("I have been used Linux based operating systems for over 2 years.")
+									.build());
+				computerSkills.add(ComputerSkill.builder()
+									.name("C Programming Language")
+									.level("3/5")
+									.explanation("I have developed multithreaded programs on Linux based operating systems. I have also developed Linux system calls.")
+									.build());
+
 				userService.save(
 					User.builder()
 						.username("furkankayar")
@@ -141,14 +161,16 @@ public class StajnetApplication {
 						.email("furkankayar27@gmail.com")
 						.contact(contact)
 						.gender(User.Gender.MALE)
-						.nationality(User.Nationality.TC)
-						.birthdate(birthdate.getTime())
+						.nationality(User.Nationality.TR)
+						.birthdate(birthdate)
 						.password(hashedPassword)
 						.socials(socials)
 						.roles(roles)
 						.foreignLanguages(foreignLanguages)
 						.jobHistories(jobHistories)
 						.educationHistories(educationHistories)
+						.projects(projects)
+						.computerSkills(computerSkills)
 						.build()
 				);
 			}

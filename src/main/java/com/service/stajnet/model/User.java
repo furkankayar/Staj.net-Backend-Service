@@ -1,7 +1,7 @@
 package com.service.stajnet.model;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,7 +42,7 @@ public final class User implements UserDetails {
     };
 
     public enum Nationality{
-        TC,
+        TR,
         OTHER
     }
 
@@ -72,7 +72,7 @@ public final class User implements UserDetails {
     private String password;
 
     @Column(name = "birthdate", nullable = true)
-    private Date birthdate;
+    private LocalDateTime birthdate;
 
     @Column(name = "nationality", nullable = true)
     @Enumerated(EnumType.STRING)
@@ -109,6 +109,14 @@ public final class User implements UserDetails {
     @Builder.Default
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<EducationHistory> educationHistories = new HashSet<EducationHistory>();
+
+    @Builder.Default
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Project> projects = new HashSet<Project>();
+
+    @Builder.Default
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<ComputerSkill> computerSkills = new HashSet<ComputerSkill>();
 
     @Column(name = "accountNonExpired")
     @Builder.Default
