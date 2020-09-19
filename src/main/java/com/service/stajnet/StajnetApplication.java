@@ -1,8 +1,16 @@
 package com.service.stajnet;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.HashSet;
 
+import com.service.stajnet.model.Address;
+import com.service.stajnet.model.Contact;
+import com.service.stajnet.model.EducationHistory;
+import com.service.stajnet.model.ForeignLanguage;
+import com.service.stajnet.model.ForeignLanguage.Language;
+import com.service.stajnet.model.ForeignLanguage.Level;
+import com.service.stajnet.model.JobHistory;
 import com.service.stajnet.model.Role;
 import com.service.stajnet.model.Social;
 import com.service.stajnet.model.User;
@@ -51,6 +59,8 @@ public class StajnetApplication {
 	
 				BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 				String hashedPassword = bCryptPasswordEncoder.encode("756ee75b");
+				Address address = Address.builder().address("9131/16 Sok. No: 4 Daire: 10 Şoförler Sitesi Refet Bele Mahallesi").city("İzmir").country("Turkey").district("Karabağlar").postCode("35160").build();
+				Contact contact = Contact.builder().address(address).fax("-").phone("+90 5336859858").website("-").build();
 				HashSet<Role> roles = new HashSet<Role>();
 				roles.add(Role.builder().role("admin").build());
 				roles.add(Role.builder().role("user").build());
@@ -58,25 +68,87 @@ public class StajnetApplication {
 				socials.add(Social.builder().address("https://www.linkedin.com/in/furkankayar/").type(Social.Type.LINKEDIN).build());
 				socials.add(Social.builder().address("https://www.github.com/furkankayar/").type(Social.Type.GITHUB).build());
 				socials.add(Social.builder().address("https://www.instagram.com/6675726b616e6b61796172/").type(Social.Type.INSTAGRAM).build());
-				Calendar cal = Calendar.getInstance();
-				cal.set(Calendar.YEAR, 1998);
-				cal.set(Calendar.MONTH, Calendar.OCTOBER);
-				cal.set(Calendar.DAY_OF_MONTH, 13);
-				cal.set(Calendar.HOUR_OF_DAY, 0);
-				cal.set(Calendar.MINUTE, 0);
-				cal.set(Calendar.SECOND, 0);
+				HashSet<ForeignLanguage> foreignLanguages = new HashSet<ForeignLanguage>();
+				foreignLanguages.add(ForeignLanguage.builder()
+										.languageName(Language.ENGLISH)
+										.listeningLevel(Level.B1)
+										.readingLevel(Level.B2)
+										.writingLevel(Level.B2)
+										.speakingLevel(Level.B1)
+										.build());
+				foreignLanguages.add(ForeignLanguage.builder()
+										.languageName(Language.GERMAN)
+										.listeningLevel(Level.B1)
+										.readingLevel(Level.B2)
+										.writingLevel(Level.B2)
+										.speakingLevel(Level.NATIVE)
+										.build());
+				Calendar birthdate = Calendar.getInstance();
+				birthdate.set(Calendar.YEAR, 1998);
+				birthdate.set(Calendar.MONTH, Calendar.OCTOBER);
+				birthdate.set(Calendar.DAY_OF_MONTH, 13);
+
+				HashSet<JobHistory> jobHistories = new HashSet<JobHistory>();
+				LocalDateTime jobStart = LocalDateTime.of(2020, 7, 20, 0, 0, 0);
+				LocalDateTime jobEnd = LocalDateTime.of(2020, 9, 7, 0, 0, 0);
+				jobHistories.add(JobHistory.builder() 
+									.companyName("ASELSAN")
+									.position("Intern")
+									.explanation("ASELSAN MGEO Aviyonik Yazılım Tasarım Müdürlüğü'nde 6 haftalık staj dönemi boyunca çalıştım.")
+									.isWorking(false)
+									.startDate(jobStart)
+									.endDate(jobEnd)
+									.build());
+				LocalDateTime jobStart2 = LocalDateTime.of(2020, 9, 20, 0, 0, 0);
+				jobHistories.add(JobHistory.builder() 
+									.companyName("Test Company")
+									.position("Software Engineer")
+									.explanation("Text Explanation")
+									.isWorking(true)
+									.startDate(jobStart2)
+									.build());
+
+				HashSet<EducationHistory> educationHistories = new HashSet<EducationHistory>();
+				LocalDateTime eduStart = LocalDateTime.of(2018, 8, 3, 0, 0, 0);
+				LocalDateTime eduStart2 = LocalDateTime.of(2012, 9, 17, 0, 0, 0);
+				LocalDateTime eduEnd2 = LocalDateTime.of(2016, 6, 17, 0, 0, 0);
+				educationHistories.add(EducationHistory.builder()
+										.type(EducationHistory.Type.UNDERGRADUATE)
+										.schoolName("Dokuz Eylül University")
+										.facultyName("Engineering Faculty")
+										.departmentName("Computer Engineering")
+										.startDate(eduStart)
+										.educationStatus(EducationHistory.Status.STUDENT)
+										.gradingSystem(EducationHistory.GradingSystem.FOUR)
+										.gpa(3.92f)
+										.classNumber("Grade 4")
+										.build());
+				educationHistories.add(EducationHistory.builder()
+										.type(EducationHistory.Type.HIGH_SCHOOL)
+										.schoolName("Övgü Terzibaşıoğlu High School")
+										.startDate(eduStart2)
+										.endDate(eduEnd2)
+										.gradingSystem(EducationHistory.GradingSystem.HUNDRED)
+										.gpa(82.48f)
+										.educationStatus(EducationHistory.Status.GRADUATED)
+										.build());
+				
 				userService.save(
 					User.builder()
 						.username("furkankayar")
 						.firstName("Furkan")
 						.lastName("Kayar")
 						.email("furkankayar27@gmail.com")
+						.contact(contact)
 						.gender(User.Gender.MALE)
 						.nationality(User.Nationality.TC)
-						.birthdate(cal.getTime())
+						.birthdate(birthdate.getTime())
 						.password(hashedPassword)
 						.socials(socials)
 						.roles(roles)
+						.foreignLanguages(foreignLanguages)
+						.jobHistories(jobHistories)
+						.educationHistories(educationHistories)
 						.build()
 				);
 			}

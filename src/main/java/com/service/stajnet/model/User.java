@@ -16,6 +16,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -78,6 +79,10 @@ public final class User implements UserDetails {
     private Nationality nationality;
 
     @Builder.Default
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Contact contact = Contact.builder().build();
+
+    @Builder.Default
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<Role>();
 
@@ -90,8 +95,20 @@ public final class User implements UserDetails {
     private Set<Company> companies = new HashSet<Company>();
 
     @Builder.Default
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<ForeignLanguage> foreignLanguages = new HashSet<ForeignLanguage>();
+
+    @Builder.Default
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Announcement> announcements = new HashSet<Announcement>();
+
+    @Builder.Default
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<JobHistory> jobHistories = new HashSet<JobHistory>();
+
+    @Builder.Default
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<EducationHistory> educationHistories = new HashSet<EducationHistory>();
 
     @Column(name = "accountNonExpired")
     @Builder.Default

@@ -1,13 +1,12 @@
 package com.service.stajnet.model;
 
-import javax.persistence.CascadeType;
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -18,32 +17,34 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Builder
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="contacts")
-public final class Contact {
+@Entity
+@Table(name = "jobHistories")
+public class JobHistory {
     
     @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Builder.Default
-    @Column(name="fax", nullable = true)
-    private String fax = "-";
+    @Column(name = "companyName", nullable=false)
+    private String companyName;
+
+    @Column(name = "position", nullable=false)
+    private String position;
 
     @Builder.Default
-    @Column(name = "phone", nullable=false)
-    private String phone = "-";
+    @Column(name = "explanation", nullable = true)
+    private String explanation = "";
 
-    @Builder.Default
-    @Column(name="website", nullable=true)
-    private String website = "-";
+    @Column(name = "isWorking", nullable=false)
+    private Boolean isWorking;
 
-    @Builder.Default
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Address address = Address.builder().build();
+    @Column(name = "startDate", nullable=false)
+    private LocalDateTime startDate;
 
+    @Column(name = "endDate", nullable=true)
+    private LocalDateTime endDate;
 }

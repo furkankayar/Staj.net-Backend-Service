@@ -28,7 +28,7 @@ public final class Announcement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name = "deadline", nullable=false)
     private Timestamp deadline;

@@ -35,7 +35,7 @@ public final class Social {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
-    private int id;
+    private Long id;
     
     @Column(name = "address", nullable = false)
     private String address;
