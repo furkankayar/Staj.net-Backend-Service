@@ -27,17 +27,14 @@ public final class Contact {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Builder.Default
     @Column(name="fax", nullable = true)
-    private String fax = "-";
+    private String fax;
 
-    @Builder.Default
-    @Column(name = "phone", nullable=false)
-    private String phone = "-";
+    @Column(name = "phone", nullable=true)
+    private String phone;
 
-    @Builder.Default
     @Column(name="website", nullable=true)
-    private String website = "-";
+    private String website;
 
     @Builder.Default
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

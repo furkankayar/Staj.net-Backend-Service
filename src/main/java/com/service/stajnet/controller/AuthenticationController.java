@@ -6,7 +6,7 @@ import com.service.stajnet.dao.LoginDAO;
 import com.service.stajnet.dao.RegisterDAO;
 import com.service.stajnet.dto.AuthenticationResponse;
 import com.service.stajnet.dto.RegisterationResponse;
-import com.service.stajnet.dto.UserDTO;
+import com.service.stajnet.dto.UserProfileDTO;
 import com.service.stajnet.service.AuthServiceImpl;
 import com.service.stajnet.service.RefreshTokenService;
 
@@ -65,7 +65,7 @@ public class AuthenticationController {
     }
 
     @GetMapping(value = "/whoami")
-    public UserDTO whoami(
+    public UserProfileDTO whoami(
         @CookieValue(name = "Authorization", required = false) String accessToken
     )
     {

@@ -7,11 +7,11 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.service.stajnet.controller.exception.NotAllowedException;
-import com.service.stajnet.controller.exception.UserNotFoundException;
-import com.service.stajnet.controller.mapper.InheritMapper;
+import com.service.stajnet.controller.mapper.AuthenticationMapper;
+import com.service.stajnet.dao.ContactInformationDAO;
 import com.service.stajnet.dao.PersonalInformationDAO;
 import com.service.stajnet.dao.UserDAO;
-import com.service.stajnet.dto.UserDTO;
+import com.service.stajnet.dto.UserProfileDTO;
 import com.service.stajnet.model.User;
 import com.service.stajnet.service.UserServiceImpl;
 
@@ -36,16 +36,15 @@ public class UserController {
     private UserServiceImpl userService;
 
     @Autowired
-    private InheritMapper mapper;
+    private AuthenticationMapper mapper;
 
     @GetMapping(value = "/{username}")
-    public User findByUsername(@PathVariable String username) {
-        User entity = userService.findByUsername(username).orElseThrow(() -> new UserNotFoundException(0l));
-        return entity;
+    public UserProfileDTO findProfileByUsername(@PathVariable String username) {
+        return userService.findProfileByUsername(username);
     }
 
-    @PutMapping(value = "/{username}")
-    public User updateUser(@PathVariable String username, @Valid @RequestBody PersonalInformationDAO personalInformationDAO) {
+    @PutMapping(value = "/{username}/personalInformation")
+    public UserProfileDTO updateUser(@PathVariable String username, @Valid @RequestBody PersonalInformationDAO personalInformationDAO) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         
         if(principal instanceof UserDetails){
@@ -62,11 +61,29 @@ public class UserController {
         }
     } 
 
+    @PutMapping(value = "/{username}/contactInformation")
+    public UserProfileDTO updateUser(@PathVariable String username, @Valid @RequestBody ContactInformationDAO contactInformationDAO) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if(principal instanceof UserDetails){
+            String authUsername = ((UserDetails)principal).getUsername();
+            if(authUsername.equals(username)){
+                return userService.updateUser(contactInformationDAO, username);
+            }
+            else{
+                throw new NotAllowedException();
+            }
+        }
+        else{
+            throw new NotAllowedException();
+        }
+    }
+
     @GetMapping
-    public Collection<UserDTO> findAll(){
+    public Collection<UserProfileDTO> findAll(){
         Iterable<User> users = this.userService.findAll();
-        List<UserDTO> userList = new ArrayList<UserDTO>();
-        users.forEach(user -> userList.add(mapper.userEntityToDTO(user)));
+        List<UserProfileDTO> userList = new ArrayList<UserProfileDTO>();
+        users.forEach(user -> userList.add(mapper.userToUserDTO(user)));
         return userList;
     }
 

@@ -2,8 +2,10 @@ package com.service.stajnet.service;
 
 import java.util.Optional;
 
-import com.service.stajnet.controller.mapper.InheritMapper;
+import com.service.stajnet.controller.mapper.UserMapper;
+import com.service.stajnet.dao.ContactInformationDAO;
 import com.service.stajnet.dao.PersonalInformationDAO;
+import com.service.stajnet.dto.UserProfileDTO;
 import com.service.stajnet.model.User;
 import com.service.stajnet.repository.IUserRepository;
 
@@ -18,7 +20,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements IUserService {
 
     @Autowired
-    private InheritMapper mapper;
+    private UserMapper userMapper;
     
     @Autowired
     private IUserRepository userRepository;
@@ -28,12 +30,18 @@ public class UserServiceImpl implements IUserService {
         return this.userRepository.findById(id);
     }
 
-    public User updateUser(PersonalInformationDAO data, String username){
+    public UserProfileDTO updateUser(PersonalInformationDAO personalInformationDAO, String username){
         User user = this.userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User is not found!"));
-        System.out.println(user);
-        user = mapper.updatePersonalInformation(user, data);
-        System.out.println(user);
-        return this.userRepository.save(user);
+        user = userMapper.mapUserAndPersonalInformationDAO(user, personalInformationDAO);
+        this.userRepository.save(user);
+        return this.userMapper.userToUserProfileDTO(user);
+    }
+
+    public UserProfileDTO updateUser(ContactInformationDAO contactInformationDAO, String username){
+        User user = this.userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User is not found!"));
+        user = userMapper.mapUserAndContactInformationDAO(user, contactInformationDAO);
+        this.userRepository.save(user);
+        return this.userMapper.userToUserProfileDTO(user);
     }
 
     @Override
@@ -49,6 +57,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     public Optional<User> findByUsername(String username) {
         return this.userRepository.findByUsername(username);
+    }
+
+    public UserProfileDTO findProfileByUsername(String username){
+        User user = this.userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User is not found!"));
+        return this.userMapper.userToUserProfileDTO(user);
     }
 
     @Override

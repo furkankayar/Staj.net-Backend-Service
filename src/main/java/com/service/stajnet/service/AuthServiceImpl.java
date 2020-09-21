@@ -7,12 +7,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.service.stajnet.controller.exception.UserNotFoundException;
-import com.service.stajnet.controller.mapper.InheritMapper;
+import com.service.stajnet.controller.mapper.AuthenticationMapper;
 import com.service.stajnet.dao.LoginDAO;
 import com.service.stajnet.dao.RegisterDAO;
 import com.service.stajnet.dto.AuthenticationResponse;
 import com.service.stajnet.dto.RegisterationResponse;
-import com.service.stajnet.dto.UserDTO;
+import com.service.stajnet.dto.UserProfileDTO;
 import com.service.stajnet.model.User;
 import com.service.stajnet.repository.IRoleRepository;
 import com.service.stajnet.security.InvalidJwtAuthenticationException;
@@ -54,7 +54,7 @@ public class AuthServiceImpl implements IAuthService{
     private IRoleRepository roleRepository;
 
     @Autowired
-    private InheritMapper mapper;
+    private AuthenticationMapper mapper;
 
     @Value("${jwt.expiration.time}")
     private long jwtExpirationInMillis;
@@ -141,7 +141,7 @@ public class AuthServiceImpl implements IAuthService{
     public RegisterationResponse register(RegisterDAO registerDAO){
 
         registerDAO.setPassword(passwordEncoder.encode(registerDAO.getPassword()));
-        User newUser = mapper.registerDAOToUserEntity(registerDAO);
+        User newUser = mapper.registerDAOToUser(registerDAO);
         newUser.getRoles().add(roleRepository.findByRole("user"));
         userService.save(newUser);
  
@@ -149,11 +149,8 @@ public class AuthServiceImpl implements IAuthService{
     }
 
     @Override
-    public UserDTO whoami(String accessToken){
-        return mapper.userEntityToDTO(
-                    userService.findByUsername(jwtTokenProvider.getUsername(accessToken))
-                               .orElseThrow(() -> new UserNotFoundException(jwtTokenProvider.getUsername(accessToken)))
-        );
+    public UserProfileDTO whoami(String accessToken){
+        return userService.findProfileByUsername(jwtTokenProvider.getUsername(accessToken));
     }
 
     @Override

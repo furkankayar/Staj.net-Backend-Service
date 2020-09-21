@@ -60,8 +60,8 @@ public class StajnetApplication {
 	
 				BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 				String hashedPassword = bCryptPasswordEncoder.encode("756ee75b");
-				Address address = Address.builder().address("9131/16 Sok. No: 4 Daire: 10 Şoförler Sitesi Refet Bele Mahallesi").city("İzmir").country("Turkey").district("Karabağlar").postCode("35160").build();
-				Contact contact = Contact.builder().address(address).fax("-").phone("+90 5336859858").website("-").build();
+				Address address = Address.builder().address("9131/16 Sok. No: 4 Daire: 10 Şoförler Sitesi Refet Bele Mahallesi").city("İzmir").country("Turkey").postCode("35160").build();
+				Contact contact = Contact.builder().address(address).phone("+90 5336859858").build();
 				HashSet<Role> roles = new HashSet<Role>();
 				roles.add(Role.builder().role("admin").build());
 				roles.add(Role.builder().role("user").build());

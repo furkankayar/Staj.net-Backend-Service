@@ -24,23 +24,18 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Builder.Default
     @Column(name = "country")
-    private String country = "-";
+    private String country;
 
-    @Builder.Default
     @Column(name = "city")
-    private String city = "-";
+    private String city;
 
-    @Builder.Default
     @Column(name = "district")
-    private String district = "-";
+    private String district;
 
-    @Builder.Default
     @Column(name = "address")
-    private String address = "-";
+    private String address;
 
-    @Builder.Default
     @Column(name = "postCode")
-    private String postCode = "-";
+    private String postCode;
 }
